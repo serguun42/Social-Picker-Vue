@@ -1,0 +1,133 @@
+:root {
+	--text: #333;
+	--primary: #00796B;
+	--primary-faded-10: rgba(0, 121, 107, 0.1);
+	--header: var(--primary);
+	--background: #E1E1E1;
+	--ripple: #FFFFFF;
+	--scroll: #39C0B0;
+	--buttons: #00796B;
+	--message-background: #FFF;
+	--message-text: #333;
+	--card-background: #FFF;
+	--card-background-faded-50: rgba(255, 255, 255, 0.5);
+}
+
+:root .is-dark {
+	--text: #E1E1E1;
+	--primary: #39C0B0;
+	--primary-faded-10: rgba(57, 192, 176, 0.1);
+	--header: #121212;
+	--background: #121212;
+	--ripple: #E1E1E1;
+	--scroll: #00796B;
+	--buttons: #00796B;
+	--message-background: #E1E1E1;
+	--message-text: #121212;
+	--card-background: #333;
+	--card-background-faded-50: rgba(51, 51, 51, 0.5);
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	color: var(--text);
+	background-color: var(--background);
+
+	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+	font-weight: 400;
+	font-size: 16px;
+	line-height: 1.35em;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+	-moz-appearance: textfield;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+
+.default-pointer {
+	border: none;
+	outline: none;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.default-scroll-color {
+	overflow-x: hidden;
+	overflow-y: auto;
+
+	scrollbar-width: thin;
+	scrollbar-color: var(--scroll) transparent;
+}
+
+.default-scroll-color::-webkit-scrollbar-track {
+	background-color: transparent;
+}
+
+.default-scroll-color::-webkit-scrollbar {
+	width: 6px;
+	height: 0;
+	background-color: transparent;
+}
+
+@media (max-width: 500px) {
+	.default-scroll-color::-webkit-scrollbar {
+		width: 2px;
+	}
+}
+
+.default-scroll-color::-webkit-scrollbar-thumb {
+	background-color: var(--scroll);
+}
+
+.default-scroll-transparent {
+	overflow-y: hidden;
+	overflow-x: auto;
+
+	scrollbar-width: none;
+	scrollbar-color: transparent transparent;
+}
+
+.default-scroll-transparent::-webkit-scrollbar-track {
+	background-color: transparent;
+}
+
+.default-scroll-transparent::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	background-color: transparent;
+}
+
+.default-scroll-transparent::-webkit-scrollbar-thumb {
+	background-color: transparent;
+}
+
+.default-no-select {
+	user-select: none;
+	-ms-user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+
+a, a:visited {
+	color: inherit;
+}
+
+.default-title-font {
+	font-family: "Product Sans", "Futura", "Roboto", Arial, "Helvetica Neue", Helvetica, sans-serif;
+	font-weight: 400;
+	line-height: 1.35em;
+	text-align: center;
+}

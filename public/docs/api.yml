@@ -1,0 +1,260 @@
+openapi: 3.1.0
+
+info:
+  description: API used in Social Picker Vue
+  version: "1.0.0"
+  contact:
+    name: Social Picker
+    url: https://social.serguun42.ru
+  license:
+    name: 'BSL-1.0'
+    url: 'https://github.com/serguun42/Social-Picker-Vue'
+  title: Social Picker API
+  x-logo:
+    url: '/img/wide/wide.png'
+
+servers:
+  - description: Social Picker Production, API version 1.0.0
+    url: https://social.serguun42.ru/api/v1/
+
+tags:
+  - name: account
+    description: "Everything about user's account"
+  - name: media
+    description: Everything about picking media in posts
+
+paths:
+  /account:
+    get:
+      description: Check account status
+      operationId: accountCheck
+      tags:
+        - account
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                example:
+                  success: true
+        '401':
+          description: Login or sign up
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+        '403':
+          description: Forbidden. Low account permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+        '429':
+          description: Too many requests
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: '429 Too Many Requests'
+
+  /media/pick:
+    get:
+      description: Pick social post
+      operationId: mediaPick
+      tags:
+        - media
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+          required: true
+          description: URL of post in any of supported platforms
+          example: https://twitter.com/MdeavorVP/status/1357368267770376195
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                example:
+                  success: true
+        '401':
+          description: Login or sign up
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+        '403':
+          description: Forbidden. Low account permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+        '404':
+          description: Post not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+        '429':
+          description: Too many requests
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: '429 Too Many Requests'
+        '500':
+          description: Picker API Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+
+  /media/download:
+    get:
+      description: Download custom file (e.g. bundled Reddit video). Available only for 5 minutes after post was picked
+      operationId: mediaDownload
+      tags:
+        - media
+      parameters:
+        - in: query
+          name: filehash
+          schema:
+            type: string
+          required: true
+          description: Hash of bundled file
+          example: 89b8b8e486421463d7e0f5caf60fb9cb35ce169b76e657ab21fc4d1d6b093603
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Login or sign up
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+        '403':
+          description: Forbidden. Low account permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+        '404':
+          description: File not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+        '410':
+          description: File is gone (5 minutes passed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+        '429':
+          description: Too many requests
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: '429 Too Many Requests'
+        '500':
+          description: Picker API Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+
+security:
+  - cookieAuth: []
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: session_id
+      description: You can login to retrieve cookies on /login-page
+
+  schemas:
+    Media:
+      additionalProperties: false
+      properties:
+        description:
+          description: Media description e.g. youtube video quality or image size
+          type: string
+        externalUrl:
+          type: string
+        filehash:
+          type: string
+        filesize:
+          description: Media total filesize if known (in bytes)
+          type: number
+        original:
+          type: string
+        otherSources:
+          additionalProperties:
+            type: string
+          type: object
+        type:
+          enum:
+            - photo
+            - gif
+            - video
+            - audio
+          type: string
+      required:
+        - type
+        - externalUrl
+      type: object
+    SocialPost:
+      additionalProperties: false
+      properties:
+        author:
+          type: string
+        authorURL:
+          type: string
+        caption:
+          type: string
+        medias:
+          items:
+            $ref: '#/components/schemas/Media'
+          type: array
+        postURL:
+          type: string
+      required:
+        - caption
+        - author
+        - authorURL
+        - postURL
+        - medias
+      type: object
+
+    DefaultError:
+      type: object
+      properties:
+        error:
+          type: boolean
+        code:
+          type: number
+        reason:
+          type: string
+      example:
+        error: true
+        code: 401
+        reason: no_login

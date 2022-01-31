@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<link rel="icon" href="<%= BASE_URL %>favicon.ico">
+
+	<meta name="theme-color" data-meta-name="theme-color" content="<%= process.env.VUE_APP_PRIMARY_COLOR %>">
+
+	<link rel="icon" sizes="512x512" href="<%= BASE_URL %>img/icons/round/round_512x512.png">
+	<link rel="icon" sizes="192x192" href="<%= BASE_URL %>img/icons/round/round_192x192.png">
+
+	<link rel="apple-touch-icon" sizes="180x180" href="<%= BASE_URL %>img/icons/round/round_180x180.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="<%= BASE_URL %>img/icons/round/round_152x152.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="<%= BASE_URL %>img/icons/round/round_120x120.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="<%= BASE_URL %>img/icons/round/round_76x76.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="<%= BASE_URL %>img/icons/round/round_60x60.png">
+	<link rel="apple-touch-icon-precomposed" sizes="180x180" href="<%= BASE_URL %>img/icons/round/round_180x180.png">
+	<link rel="apple-touch-icon-precomposed" sizes="152x152" href="<%= BASE_URL %>img/icons/round/round_152x152.png">
+	<link rel="apple-touch-icon-precomposed" sizes="120x120" href="<%= BASE_URL %>img/icons/round/round_120x120.png">
+	<link rel="apple-touch-icon-precomposed" sizes="76x76" href="<%= BASE_URL %>img/icons/round/round_76x76.png">
+	<link rel="apple-touch-icon-precomposed" sizes="60x60" href="<%= BASE_URL %>img/icons/round/round_60x60.png">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" data-meta-name="theme-color" content="<%= process.env.VUE_APP_PRIMARY_COLOR %>">
+	<meta name="apple-mobile-web-app-title" content="<%= process.env.VUE_APP_NAME %>">
+
+	<meta name="msapplication-TileColor" data-meta-name="theme-color" content="<%= process.env.VUE_APP_PRIMARY_COLOR %>">
+	<meta name="msapplication-TileImage" content="<%= BASE_URL %>img/icons/round/round_144x144.png">
+
+	<meta name="mobile-web-app-capable" content="yes">
+	<link rel="manifest" href="/manifest.json">
+	<link rel="manifest" href="/manifest.webmanifest">
+
+	<link rel="stylesheet" href="<%= BASE_URL %>css/default.css">
+	<link rel="stylesheet" href="<%= BASE_URL %>css/other-fonts.css">
+	<link rel="stylesheet" href="<%= BASE_URL %>css/inputs.css">
+	<link rel="stylesheet" href="/resources/roboto-font.css?main">
+	<link rel="stylesheet" href="/resources/material-icons.css?main">
+	<title><%= process.env.VUE_APP_NAME %></title>
+</head>
+
+<body class="default-scroll-color">
+	<noscript>
+		<p>
+			<strong>
+				We're sorry but <%= process.env.VUE_APP_NAME %> doesn't work properly without JavaScript enabled. Please enable it to continue.
+			</strong>
+		</p>
+	</noscript>
+
+	<div id="app"></div>
+</body>
+
+</html>
