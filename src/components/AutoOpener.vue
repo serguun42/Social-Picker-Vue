@@ -59,6 +59,8 @@ export default {
 			}
 		},
 		start() {
+			if (this.$store.getters.socialPostPickedInSession) return;
+
 			Dispatcher.unlink("autoOpenerStart", this.start);
 
 			FadeIn(this.containerElem, ANIMATIONS.AUTO_OPENER_SLIDING_MS);
@@ -76,6 +78,11 @@ export default {
 
 			FadeOut(this.containerElem, ANIMATIONS.AUTO_OPENER_SLIDING_MS)
 			.then(() => this.barElem.style.removeProperty("bottom"));
+		},
+		/** @param {KeyboardEvent} e */
+		checkForEscape(e) {
+			if (e.code === "Escape" || e.key === "Escape")
+				this.stop();
 		}
 	},
 	mounted() {
@@ -83,9 +90,13 @@ export default {
 		this.barElem = this.$refs["bar"];
 
 		Dispatcher.link("autoOpenerStart", this.start);
+		Dispatcher.link("postPicked", this.stop);
+		window.addEventListener("keydown", this.checkForEscape);
 	},
 	beforeDestroy() {
 		Dispatcher.unlink("autoOpenerStart", this.start);
+		Dispatcher.unlink("postPicked", this.stop);
+		window.removeEventListener("keydown", this.checkForEscape);
 	}
 }
 </script>

@@ -31,6 +31,8 @@ const store = new Vuex.Store({
 
 		/** @type {import("./types").SocialPost} */
 		socialPost: null,
+
+		socialPostPickedInSession: false
 	}),
 	mutations: {
 		/**
@@ -88,6 +90,10 @@ const store = new Vuex.Store({
 				return LogMessageOrError(new Error(`Malformed <socialPost>`));
 
 			state.socialPost = socialPost;
+		},
+
+		socialPostPickedInSession(state) {
+			state.socialPostPickedInSession = true;
 		}
 	},
 	actions: {
@@ -146,6 +152,7 @@ const store = new Vuex.Store({
 					return Promise.reject(socialPost);
 
 				context.commit("socialPost", socialPost);
+				context.commit("socialPostPickedInSession");
 				Dispatcher.call("postPicked");
 			})
 			.catch(/** @param {import("@/types").DefaultError} e */ (e) => {
@@ -166,6 +173,7 @@ const store = new Vuex.Store({
 		permissionToPaste: (state) => state.permissionToPaste,
 		socialPost: (state) => state.socialPost,
 		socialPostOK: (state) => !!state.socialPost?.medias?.length && !!state.socialPost?.postURL,
+		socialPostPickedInSession: (state) => state.socialPostPickedInSession
 	}
 });
 

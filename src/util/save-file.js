@@ -63,6 +63,7 @@ const SaveFile = (source, filename, extension) => {
 		document.body.appendChild(anchor);
 		try {
 			anchor.click();
+			store.dispatch("showMessage", store.getters.i18n("saving file"));
 		} catch (e) {
 			LogMessageOrError(e);
 		}

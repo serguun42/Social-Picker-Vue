@@ -21,12 +21,6 @@
 <script>
 import InputRadio from "../InputRadio.vue";
 
-/**
- * @param {string} desc
- * @returns {boolean}
- */
-const LocalSpecialTest = (desc) => /video\s\+\saudio/i.test(desc);
-
 export default {
 	name: "CategoryYoutube",
 	components: { InputRadio },
@@ -48,10 +42,33 @@ export default {
 
 			values: this.predefinedValues
 					.sort((prev, next) => {
-						if (LocalSpecialTest(next.description) && !LocalSpecialTest(prev.description))
+						const prevBoth = /video\s\+\saudio/i.test(prev.description);
+						const nextBoth = /video\s\+\saudio/i.test(next.description);
+						const prevVideo = /video/i.test(prev.description);
+						const nextVideo = /video/i.test(next.description);
+						const prevRes = prev.description?.split("/")?.[0]?.trim();
+						const nextRes = next.description?.split("/")?.[0]?.trim();
+
+						if (nextBoth && prevBoth)
+							return (nextRes > prevRes ? 1 : nextRes < prevRes ? -1 : 0);
+
+						if (nextBoth && !prevBoth)
 							return 1;
 
-						if (!LocalSpecialTest(next.description) && LocalSpecialTest(prev.description))
+						if (!nextBoth && prevBoth)
+							return -1;
+
+						if (prevVideo && nextVideo) {
+							if (prevRes === nextRes)
+								return next.filesize - prev.filesize
+							else
+								return (nextRes > prevRes ? 1 : nextRes < prevRes ? -1 : 0);
+						}
+
+						if (nextVideo && !prevVideo)
+							return 1;
+
+						if (!nextVideo && prevVideo)
 							return -1;
 
 						return next.filesize - prev.filesize;
