@@ -123,8 +123,39 @@ export const CheckForLink = (givenURL) => {
 		return false;
 };
 
+/**
+ * Returns username for certain platforms from link
+ * 
+ * @param {string} givenURL
+ * @returns {string}
+ */
+export const CheckForDisplayName = (givenURL) => {
+	const url = SafeParseURL(givenURL);
+	if (!url) return false;
+
+	if (
+		url.hostname === "twitter.com" ||
+		url.hostname === "www.twitter.com" ||
+		url.hostname === "mobile.twitter.com" || 
+		url.hostname === "nitter.net" ||
+		url.hostname === "www.nitter.net" ||
+		url.hostname === "mobile.nitter.net" ||
+		url.hostname === "instagram.com" ||
+		url.hostname === "www.instagram.com"
+	)
+		return url.pathname.match(/^\/(?<displayName>[^\/]+)/)?.groups?.["displayName"] || "";
+	else if (
+		url.hostname === "reddit.com" ||
+		url.hostname === "www.reddit.com"
+	)
+		return url.pathname.match(/^\/(u|user)\/(?<displayName>[^\/]+)/)?.groups?.["displayName"] || "";
+	else
+		return "";
+};
+
 
 export default {
 	SafeParseURL,
-	CheckForLink
+	CheckForLink,
+	CheckForDisplayName
 };

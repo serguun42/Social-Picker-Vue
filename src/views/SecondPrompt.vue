@@ -74,7 +74,7 @@
 <script>
 import Card from "@/components/Card.vue"
 import Category from "@/components/inputs/categories/Category.vue";
-import { CheckForLink, SafeParseURL } from "@/util/check-for-link";
+import { CheckForDisplayName, CheckForLink, SafeParseURL } from "@/util/check-for-link";
 import { API_METHODS } from "@/util/api";
 import Dispatcher from "@/util/dispatcher";
 import SaveFile from "@/util/save-file";
@@ -108,15 +108,17 @@ export default {
 			/** @returns {string[]} */
 			get() {
 				const author = this.socialPost.author || "";
+				const authorDisplayName = CheckForDisplayName(this.socialPost.authorURL);
 				const authorNoHashtags = author.replace(/#([\d\p{L}])+/gu, "").trim();
 				const authorOnlyUnicodeLetters = authorNoHashtags.replace(/[^\p{L}\p{M}\p{P}\d\-_.,!\s]/gu, "").trim();
-				const authorFirstSentence = authorOnlyUnicodeLetters.split(/[,.!?]/)[0].trim();
+				const authorMinimal = authorOnlyUnicodeLetters.replace(/[^\w\s.,]/g, "").replace(/\s+/g, " ").trim();
 
 				return [
 					author,
+					authorDisplayName,
 					authorNoHashtags,
 					authorOnlyUnicodeLetters,
-					authorFirstSentence
+					authorMinimal
 				].filter((value, index, array) => !!value && index === array.indexOf(value));
 			}
 		},
@@ -125,13 +127,15 @@ export default {
 			get() {
 				const caption = this.socialPost.caption || "";
 				const captionNoHashtags = caption.replace(/#([\d\p{L}])+/gu, "").trim();
-				const captionOnlyUnicodeLetters = captionNoHashtags.replace(/[^\p{L}\p{M}\p{P}\d\-_.,!\s]/gu, "").trim();
-				const captionFirstSentence = captionOnlyUnicodeLetters.split(/[,.!?\/\\\(\)…]/)[0].trim();
+				const captionNoEntities = captionNoHashtags.replace(/@([\d\p{L}])+/gu, "").trim();
+				const captionOnlyUnicodeLetters = captionNoEntities.replace(/[^\p{L}\p{M}\p{P}\d\-_.,!\s]/gu, "").trim();
+				const captionFirstSentence = captionOnlyUnicodeLetters.split(/[,.;!?\/\\\(\)…]/)[0].trim();
 				const captionMinimal = captionFirstSentence.replace(/[^\w\s.,]/g, "").replace(/\s+/g, " ").trim();
 
 				return [
 					caption,
 					captionNoHashtags,
+					captionNoEntities,
 					captionOnlyUnicodeLetters,
 					captionFirstSentence,
 					captionMinimal
