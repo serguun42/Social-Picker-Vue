@@ -26,10 +26,7 @@ export const CheckForLink = (givenURL) => {
 	if (
 		url.hostname === "twitter.com" ||
 		url.hostname === "www.twitter.com" ||
-		url.hostname === "mobile.twitter.com"
-	)
-		return "Twitter";
-	else if (
+		url.hostname === "mobile.twitter.com" ||
 		url.hostname === "nitter.net" ||
 		url.hostname === "www.nitter.net" ||
 		url.hostname === "mobile.nitter.net"
@@ -46,7 +43,8 @@ export const CheckForLink = (givenURL) => {
 		return "Instagram";
 	else if (
 		url.hostname === "reddit.com" ||
-		url.hostname === "www.reddit.com"
+		url.hostname === "www.reddit.com" ||
+		url.hostname === "old.reddit.com"
 	)
 		return "Reddit";
 	else if (
