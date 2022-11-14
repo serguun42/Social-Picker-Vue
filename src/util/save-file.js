@@ -23,7 +23,7 @@ const LocalFetch = (source) => {
 	if (forCors)
 		source = API_METHODS.MediaDownloadURLForCORS(source);
 
-	const cors = (new SafeParseURL(source).origin !== location.origin);
+	const cors = (SafeParseURL(source).origin !== location.origin);
 
 	return fetch(source, {
 		method: "GET",

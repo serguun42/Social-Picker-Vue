@@ -33,7 +33,8 @@ export const CheckForLink = (givenURL) => {
 	)
 		return "Twitter";
 	else if (
-		url.hostname === "pbs.twimg.com"
+		url.hostname === "pbs.twimg.com" ||
+		url.hostname === "video.twimg.com"
 	)
 		return "Twitter";
 	else if (
@@ -50,7 +51,8 @@ export const CheckForLink = (givenURL) => {
 		return "Reddit";
 	else if (
 		url.hostname === "pixiv.net" ||
-		url.hostname === "www.pixiv.net"
+		url.hostname === "www.pixiv.net" ||
+		url.hostname === "i.pximg.net"
 	)
 		return "Pixiv";
 	else if (
@@ -118,6 +120,8 @@ export const CheckForLink = (givenURL) => {
 		url.hostname === "vc.ru"
 	)
 		return "Osnova";
+	else if (/^(m\.)?(joy|safe|anime\.|porn|fap)?reactor\.(cc|com)$/.test(url.hostname))
+		return "Joyreactor"
 	else
 		return false;
 };
