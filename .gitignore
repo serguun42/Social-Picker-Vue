@@ -31,7 +31,9 @@ jsconfig.json
 src/config/i18n/list.json
 src/config/local.env
 public/version.txt
+public/build_hash
 public/manifest.json
 public/manifest.webmanifest
 public/docs/*.html
 public/resources/fonts/
+public/service-worker.js

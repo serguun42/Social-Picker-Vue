@@ -2,7 +2,7 @@ import store from "../store";
 import Dispacher from "./dispatcher";
 import LogMessageOrError from "./log";
 
-const CACHE_STORAGE_NAME = "social_picker_cache_storage";
+const CACHE_STORAGE_NAME = process.env.VUE_APP_CACHE_STORAGE_NAME;
 
 /**
  * @param {boolean} showMessage
@@ -35,7 +35,7 @@ if ("serviceWorker" in navigator && !IS_DEV)
 	navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
 
 window.addEventListener("load", () => {
-	fetch("/version.txt")
+	fetch("/build_hash")
 	.then((res) => {
 		if (res.status === 200)
 			return res.text();

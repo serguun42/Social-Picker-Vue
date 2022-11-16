@@ -81,6 +81,7 @@ export default {
 	},
 	mounted() {
 		this.calcResult();
+		if (this.result.enabled) this.qualityEnabling(this.result.enabled);
 	}
 }
 </script>

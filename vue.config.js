@@ -1,16 +1,15 @@
-const IS_DEV = (process.env.NODE_ENV === "development");
 const { createHash } = require("crypto");
 const { resolve } = require("path");
-const { readdir, writeFile, readFileSync } = require("fs");
-const { promisify } = require("util");
+const { readFileSync } = require("fs");
+const { readdir, writeFile } = require("fs/promises");
 const { DefinePlugin } = require("webpack");
-const fsReadDir = promisify(readdir);
-const fsWriteFile = promisify(writeFile);
+const WebpackSWPlugin = require("@serguun42/webpack-service-worker-plugin");
+
 /**
  * @param {import("fs").PathOrFileDescriptor}
  * @returns {string}
  */
-const fsReadFileSync = (path) => {
+const ReadFileWrapper = (path) => {
 	try {
 		return readFileSync(path).toString();
 	} catch (e) {
@@ -18,15 +17,11 @@ const fsReadFileSync = (path) => {
 	}
 };
 
-
-
-
-/**
- * Environment variables
- */
+/** Environment variables */
+const IS_DEV = (process.env.NODE_ENV === "development");
 const BUILD_HASH = createHash("md5").update(`BUILDSALT-${Date.now()}`).digest("hex");
 const GENERAL_DOT_ENV = resolve("src", "config", `${IS_DEV ? "local" : "production"}.env`);
-const ENVIRONMENT_RAW = fsReadFileSync(GENERAL_DOT_ENV).replace(/__BUILD_HASH__/, BUILD_HASH);
+const ENVIRONMENT_RAW = ReadFileWrapper(GENERAL_DOT_ENV).replace(/__BUILD_HASH__/, BUILD_HASH);
 
 ENVIRONMENT_RAW.split("\n").forEach((line) => {
 	if (line.search("=") < 0) return;
@@ -36,15 +31,10 @@ ENVIRONMENT_RAW.split("\n").forEach((line) => {
 	process.env[name] = value;
 });
 
-fsWriteFile(resolve("public", "version.txt"), BUILD_HASH)
-.catch((e) => process.stderr.write("Cannot save version.txt", e));
+writeFile(resolve("public", "build_hash"), BUILD_HASH)
+.catch((e) => process.stderr.write("Cannot save build_hash", e));
 
 
-
-
-/**
- * Manifests
- */
 /** @typedef {{[prop: string]: string | number | null | ManifesType}} ManifesType */
 /**
  * @param {ManifesType} manifestPart
@@ -71,46 +61,38 @@ const ManifestTemplateHandler = (manifestPart) => {
 	return builtPart;
 };
 
-const MANIFEST_BASE = JSON.parse(fsReadFileSync(resolve("src", "config", "manifest.base.json")));
+const MANIFEST_BASE = JSON.parse(ReadFileWrapper(resolve("src", "config", "manifest.base.json")));
 const builtManifest = ManifestTemplateHandler(MANIFEST_BASE);
 
-fsWriteFile(resolve("public", "manifest.json"), JSON.stringify(builtManifest, false, "\t"))
-.then(() => fsWriteFile(resolve("public", "manifest.webmanifest"), JSON.stringify(builtManifest, false, "\t")))
+writeFile(resolve("public", "manifest.json"), JSON.stringify(builtManifest, false, "\t"))
+.then(() => writeFile(resolve("public", "manifest.webmanifest"), JSON.stringify(builtManifest, false, "\t")))
 .catch((e) => process.stderr.write("Cannot save WebManifest", e));
 
 
 
 
-/**
- * I18N
- */
-fsReadDir("./src/config/i18n/")
+/** I18N */
+readdir("./src/config/i18n/")
 .then((i18nFiles) => {
 	const filteredDictionaries = i18nFiles.filter((file) => /(?<!^list)\.json$/.test(file));
 
-	return fsWriteFile("./src/config/i18n/list.json", JSON.stringify(filteredDictionaries, false, "\t"));
+	return writeFile("./src/config/i18n/list.json", JSON.stringify(filteredDictionaries, false, "\t"));
 })
 .catch((e) => process.stderr.write("Cannot create list of i18n .json files", e));
 
 
 
-
-/**
- * Webpack config
- */
 /** @type {import("webpack").Resolve} */
-const WEBPACK_RESOLVE = {
+const WEBPACK_RESOLVE_OPTIONS = {
 	alias: {
 		"@": resolve("src")
 	}
 };
 
-/** @type {import("webpack").Plugin[]} */
-const WEBPACK_PLUGINS = [
-	new DefinePlugin({
-		IS_DEV: JSON.stringify(IS_DEV)
-	})
-];
+const definePlugin = new DefinePlugin({
+	IS_DEV: JSON.stringify(IS_DEV)
+});
+
 
 /** @type {import("@vue/cli-service").ProjectOptions} */
 const DEV_VUE_CONFIG = {
@@ -120,14 +102,23 @@ const DEV_VUE_CONFIG = {
 		output: {
 			pathinfo: false
 		},
-		resolve: WEBPACK_RESOLVE,
-		plugins: WEBPACK_PLUGINS,
-		devServer: (IS_DEV && process.env.DEV_LOCAL_HTTPS_CERT_PATH && process.env.DEV_LOCAL_HTTPS_KEY_PATH ? {
+		resolve: WEBPACK_RESOLVE_OPTIONS,
+		plugins: [
+			definePlugin
+		],
+		devServer: {
 			host: "localhost",
-			https: true,
-			key: fsReadFileSync(process.env.DEV_LOCAL_HTTPS_KEY_PATH),
-			cert: fsReadFileSync(process.env.DEV_LOCAL_HTTPS_CERT_PATH),
 			port: process.env.DEV_LOCAL_PORT,
+
+			server: process.env.DEV_LOCAL_HTTPS_KEY_PATH & process.env.DEV_LOCAL_HTTPS_CERT_PATH
+				? {
+					options: {
+						key: ReadFileWrapper(process.env.DEV_LOCAL_HTTPS_KEY_PATH),
+						cert: ReadFileWrapper(process.env.DEV_LOCAL_HTTPS_CERT_PATH),
+					}
+				}
+				: undefined,
+
 			proxy: {
 				"^/resources/": {
 					target: process.env.DEV_RESOURCE_TARGET
@@ -143,7 +134,7 @@ const DEV_VUE_CONFIG = {
 					changeOrigin: true
 				}
 			}
-		} : {})
+		},
 	},
 
 	publicPath: process.env.VUE_APP_RELATIVE_PATH,
@@ -158,8 +149,14 @@ const PROD_VUE_CONFIG = {
 		output: {
 			pathinfo: false
 		},
-		resolve: WEBPACK_RESOLVE,
-		plugins: WEBPACK_PLUGINS
+		resolve: WEBPACK_RESOLVE_OPTIONS,
+		plugins: [
+			definePlugin,
+			new WebpackSWPlugin({
+				source: "src/service-worker.js",
+				output: "service-worker.js",
+			})
+		]
 	},
 
 	publicPath: process.env.VUE_APP_RELATIVE_PATH,

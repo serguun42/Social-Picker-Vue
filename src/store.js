@@ -3,7 +3,6 @@ import Vuex from "vuex";
 import DefaultLocale from "./config/i18n/en_US.json";
 import { ANIMATIONS } from "./util/animations";
 import { API_METHODS } from "./util/api";
-import { SafeParseURL } from "./util/check-for-link";
 import Dispatcher from "./util/dispatcher";
 import LogMessageOrError from "./util/log";
 import { GetCompleteTheme } from "./util/theme";

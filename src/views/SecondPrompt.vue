@@ -78,6 +78,7 @@ import { CheckForDisplayName, CheckForLink, SafeParseURL } from "@/util/check-fo
 import { API_METHODS } from "@/util/api";
 import Dispatcher from "@/util/dispatcher";
 import SaveFile from "@/util/save-file";
+import Is4K from "@/util/is-4k";
 
 export default {
 	components: { Card, Category },
@@ -86,22 +87,26 @@ export default {
 		isFullyOpened: Boolean
 	},
 	data() {
+		/** @returns {import("../types").SocialPost} */
+		const socialPost = this.$store.getters.socialPost;
+		const is4K = Is4K(socialPost);
+
 		return {
 			/** @type {string} */
-			captionWithoutHashtags: this.$store.getters.socialPost.caption.replace(/#([\d\p{L}])+/gu, "").trim(),
+			captionWithoutHashtags: socialPost.caption.replace(/#(?<entity>[\d\p{L}]+)/gu, "").trim(),
 			results: {
 				author: { raw: "" },
 				caption: { raw: "" },
 				numeraition: { enabled: false, startingWith: 1, addingShotPrefix: false },
-				quality: { enabled: false, label: "" },
-				/** @type {import("@/types").Media} */
+				quality: { enabled: is4K, label: is4K ? "4K" : "" },
+				/** @type {import("../types").Media} */
 				youtube: { externalUrl: "", filetype: "" }
 			}
 		}
 	},
 	computed: {
 		socialPost: {
-			/** @returns {import("@/types").SocialPost} */
+			/** @returns {import("../types").SocialPost} */
 			get() { return this.$store.getters.socialPost; }
 		},
 		filteredAuthors: {
@@ -109,8 +114,8 @@ export default {
 			get() {
 				const author = this.socialPost.author || "";
 				const authorDisplayName = CheckForDisplayName(this.socialPost.authorURL);
-				const authorNoHashtags = author.replace(/#([\d\p{L}])+/gu, "").trim();
-				const authorOnlyUnicodeLetters = authorNoHashtags.replace(/[^\p{L}\p{M}\p{P}\d\-_.,!\s]/gu, "").trim();
+				const authorNoHashtags = author.replace(/#(?<entity>[\d\p{L}]+)/gu, "").replace(/\s+/g, " ").trim();
+				const authorOnlyUnicodeLetters = authorNoHashtags.replace(/[^\p{L}\p{M}\p{P}\d\-_.,!\s]/gu, "").replace(/\s+/g, " ").trim();
 				const authorMinimal = authorOnlyUnicodeLetters.replace(/[^\w\s.,]/g, "").replace(/\s+/g, " ").trim();
 
 				return [
@@ -126,14 +131,20 @@ export default {
 			/** @returns {string[]} */
 			get() {
 				const caption = this.socialPost.caption || "";
-				const captionNoHashtags = caption.replace(/#([\d\p{L}])+/gu, "").trim();
-				const captionNoEntities = captionNoHashtags.replace(/@([\d\p{L}])+/gu, "").trim();
-				const captionOnlyUnicodeLetters = captionNoEntities.replace(/[^\p{L}\p{M}\p{P}\d\-_.,!\s]/gu, "").trim();
-				const captionFirstSentence = captionOnlyUnicodeLetters.split(/[,.;!?\/\\\(\)…]/)[0].trim();
+				const captionParsedHashtags = caption.replace(/#(?<entity>[\d\p{L}]+)/gu, (_match, entityGroup) => {
+					if (!entityGroup || typeof entityGroup !== "string") return "";
+
+					return entityGroup.replace(/(\p{Uppercase})(\p{Lowercase})/gu, " $1$2");
+				}).replace(/\s+/g, " ").trim();
+				const captionNoHashtags = caption.replace(/#(?<entity>[\d\p{L}]+)/gu, "").replace(/\s+/g, " ").trim();
+				const captionNoEntities = captionNoHashtags.replace(/@(?<entity>[\d\p{L}]+)/gu, "").replace(/\s+/g, " ").trim();
+				const captionOnlyUnicodeLetters = captionNoEntities.replace(/[^\p{L}\p{M}\p{P}\d\-_.,!\s]/gu, "").replace(/\s+/g, " ").trim();
+				const captionFirstSentence = captionOnlyUnicodeLetters.split(/[,.;!?\/\\\(\)…]/)[0].replace(/\s+/g, " ").trim();
 				const captionMinimal = captionFirstSentence.replace(/[^\w\s.,]/g, "").replace(/\s+/g, " ").trim();
 
 				return [
 					caption,
+					captionParsedHashtags,
 					captionNoHashtags,
 					captionNoEntities,
 					captionOnlyUnicodeLetters,

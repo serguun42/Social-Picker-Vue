@@ -1,6 +1,6 @@
 <template>
 	<label
-		class="mdl-radio mdl-js-radio is-upgraded default-no-select"
+		class="mdl-radio mdl-js-radio is-upgraded"
 		:class="{ 'is-checked': checked }"
 		:for="`input-radio-${stamp}`"
 		@click="chosen"
