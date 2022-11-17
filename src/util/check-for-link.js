@@ -29,7 +29,8 @@ export const CheckForLink = (givenURL) => {
 		url.hostname === "mobile.twitter.com" ||
 		url.hostname === "nitter.net" ||
 		url.hostname === "www.nitter.net" ||
-		url.hostname === "mobile.nitter.net"
+		url.hostname === "mobile.nitter.net" ||
+		url.hostname === "vxtwitter.com"
 	)
 		return "Twitter";
 	else if (
@@ -120,7 +121,7 @@ export const CheckForLink = (givenURL) => {
 		url.hostname === "vc.ru"
 	)
 		return "Osnova";
-	else if (/^(m\.)?(joy|safe|anime\.|porn|fap)?reactor\.(cc|com)$/.test(url.hostname))
+	else if (/^(m\.|img\d+\.)?(joy|safe|anime\.|porn|fap)?reactor\.(cc|com)$/.test(url.hostname))
 		return "Joyreactor"
 	else
 		return false;
