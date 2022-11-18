@@ -122,7 +122,9 @@ export const CheckForLink = (givenURL) => {
 	)
 		return "Osnova";
 	else if (/^(m\.|img\d+\.)?(joy|safe|anime\.|porn|fap)?reactor\.(cc|com)$/.test(url.hostname))
-		return "Joyreactor"
+		return "Joyreactor";
+	else if (url.hostname === "coub.com")
+		return "Coub";
 	else
 		return false;
 };
