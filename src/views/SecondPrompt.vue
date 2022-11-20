@@ -97,7 +97,7 @@ export default {
 			results: {
 				author: { raw: "" },
 				caption: { raw: "" },
-				numeraition: { enabled: false, startingWith: 1, addingShotPrefix: false },
+				numeraition: { enabled: false, startingWith: 1, addingShotPrefix: true },
 				quality: { enabled: is4K, label: is4K ? "4K" : "" },
 				/** @type {import("../types").Media} */
 				youtube: { externalUrl: "", filetype: "" }

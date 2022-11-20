@@ -21,14 +21,19 @@ const ReadFileWrapper = (path) => {
 const IS_DEV = (process.env.NODE_ENV === "development");
 const BUILD_HASH = createHash("md5").update(`BUILDSALT-${Date.now()}`).digest("hex");
 const GENERAL_DOT_ENV = resolve("src", "config", `${IS_DEV ? "local" : "production"}.env`);
-const ENVIRONMENT_RAW = ReadFileWrapper(GENERAL_DOT_ENV).replace(/__BUILD_HASH__/, BUILD_HASH);
+const ENVIRONMENT_FILE = ReadFileWrapper(GENERAL_DOT_ENV)
+						.replace(
+							/\$(?<variableName>\w+)/g,
+							(match, variableName) => process.env[variableName] || match
+						)
+						.replace(/__BUILD_HASH__/, BUILD_HASH);
 
-ENVIRONMENT_RAW.split("\n").forEach((line) => {
+ENVIRONMENT_FILE.split("\n").forEach((line) => {
 	if (line.search("=") < 0) return;
 
-	const [ name, value ] = line.split("=");
+	const [ name, ...value ] = line.split("=");
 
-	process.env[name] = value;
+	process.env[name] = value.join("=");
 });
 
 writeFile(resolve("public", "build_hash"), BUILD_HASH)

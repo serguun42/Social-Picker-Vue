@@ -41,5 +41,6 @@
 	"theme desc light": "Always light theme",
 	"theme desc dark": "Always dark theme",
 	"theme desc schedule": "Theme by schedule (dark after 19:30)",
-	"theme desc system": "Theme as in system"
+	"theme desc system": "Theme as in system",
+	"frontent version": "Frontend version"
 }

@@ -49,6 +49,11 @@
 				<i class="material-icons material-icons-round default-no-select">delete_outline</i>
 				<span v-text="$store.getters.i18n('Clear cache')"></span>
 			</div>
+
+			<div class="footer__section__item default-no-select">
+				<i class="material-icons material-icons-round default-no-select">code</i>
+				<span>{{ $store.getters.i18n('Frontend version') }} {{ version }}</span>
+			</div>
 		</section>
 
 		<section class="footer__section">
@@ -78,6 +83,7 @@ export default {
 	name: "CustomFooter",
 	data() {
 		return {
+			version: process.env.VUE_APP_VERSION,
 			footerLinks: [
 				{ icon: "home", href: "https://serguun42.ru", text: "home" },
 				{ icon: "contact_mail", href: "https://serguun42.ru/?contacts", text: "contacts" },
