@@ -1,12 +1,12 @@
 {
   "name": "social-picker-vue",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Frontend client built for Social Picker API – https://github.com/serguun42/Social-Picker-API",
   "main": "src/main.js",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "generate-openapi-types": "ts-to-openapi -f src/types/index.d.ts",
+    "generate-openapi-types": "ts-to-openapi -f src/types/*",
     "generate-openapi-redoc": "redoc-cli bundle public/docs/api.yml -o public/docs/redoc.html"
   },
   "repository": {

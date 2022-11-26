@@ -185,8 +185,13 @@ export default {
 				const extension = (
 					media.filetype ||
 					SafeParseURL(media.original || media.externalUrl).pathname
-						.match(/\.([\w\:]+$)/)?.[1]?.replace(/\:\w+$/, "") ||
-					(platformName === "Youtube" ? "mp4" : "jpg")
+						.match(/\.([\w\:]+$)/)?.[1]
+						?.replace(/\:\w+$/, "") ||
+					(platformName === "Youtube"
+						? "mp4"
+						: media.type === "gif"
+						? "gif"
+						: "jpg")
 				);
 
 				if (this.youtube)
