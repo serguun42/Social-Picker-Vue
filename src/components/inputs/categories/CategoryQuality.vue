@@ -11,20 +11,20 @@
 		</div>
 
 		<div class="category__sub-category">
-			<category-text
-				:result="resultForCategoryText"
-				:predefinedValues="valuesForCategoryText"
-			></category-text>
+			<category-text :result="resultForCategoryText" :predefinedValues="valuesForCategoryText"></category-text>
 
-			<div class="category__sub-category__obfuscator" ref="obfuscator"></div>
+			<div
+				class="category__sub-category__obfuscator default-pointer default-no-select"
+				@click="qualityEnabling(true)"
+				ref="obfuscator"
+			></div>
 		</div>
 	</div>
 </template>
 
-
 <script>
 import { ANIMATIONS, FadeIn, FadeOut } from "@/util/animations";
-import InputCheckbox from "../InputCheckbox.vue"
+import InputCheckbox from "../InputCheckbox.vue";
 import CategoryText from "./CategoryText.vue";
 
 export default {
@@ -38,7 +38,7 @@ export default {
 		result: Object
 	},
 	watch: {
-		"resultForCategoryText.raw": function() {
+		"resultForCategoryText.raw": function () {
 			this.calcResult();
 		}
 	},
@@ -61,7 +61,7 @@ export default {
 					raw: ""
 				}
 			]
-		}
+		};
 	},
 	methods: {
 		calcResult() {
@@ -69,12 +69,10 @@ export default {
 			this.result.label = this.resultForCategoryText.raw;
 		},
 		qualityEnabling(newQualityEnabled) {
-			this.isQualityEnabled = newQualityEnabled;
+			this.isQualityEnabled = !!newQualityEnabled;
 
-			if (this.isQualityEnabled)
-				FadeOut(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
-			else
-				FadeIn(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
+			if (this.isQualityEnabled) FadeOut(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
+			else FadeIn(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
 
 			this.calcResult();
 		}
@@ -83,9 +81,7 @@ export default {
 		this.calcResult();
 		if (this.result.enabled) this.qualityEnabling(this.result.enabled);
 	}
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

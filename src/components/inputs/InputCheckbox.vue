@@ -9,6 +9,7 @@
 			type="checkbox"
 			class="mdl-checkbox__input"
 			:id="`input-checkbox-${stamp}`"
+			:checked="checked"
 			@input="chosen"
 		>
 		<span

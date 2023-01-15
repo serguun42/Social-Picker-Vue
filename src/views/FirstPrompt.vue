@@ -117,7 +117,7 @@ export default {
 
 					this.postURL.raw = readText;
 					this.pickPost();
-				}
+				};
 
 				Dispatcher.call("autoOpenerStart");
 				Dispatcher.link("autoOpenerDone", LocalAutoOpenerDone);

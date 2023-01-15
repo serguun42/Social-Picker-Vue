@@ -11,10 +11,7 @@
 		</div>
 
 		<div class="category__sub-category">
-			<category-text
-				:result="resultForCategoryText"
-				:predefinedValues="valuesForCategoryText"
-			></category-text>
+			<category-text :result="resultForCategoryText" :predefinedValues="valuesForCategoryText"></category-text>
 
 			<div class="category__value">
 				<input-checkbox
@@ -24,15 +21,18 @@
 				></input-checkbox>
 			</div>
 
-			<div class="category__sub-category__obfuscator" ref="obfuscator"></div>
+			<div
+				class="category__sub-category__obfuscator default-pointer default-no-select"
+				@click="numerationEnabling(true)"
+				ref="obfuscator"
+			></div>
 		</div>
 	</div>
 </template>
 
-
 <script>
 import { ANIMATIONS, FadeIn, FadeOut } from "@/util/animations";
-import InputCheckbox from "../InputCheckbox.vue"
+import InputCheckbox from "../InputCheckbox.vue";
 import CategoryText from "./CategoryText.vue";
 
 export default {
@@ -46,7 +46,7 @@ export default {
 		result: Object
 	},
 	watch: {
-		"resultForCategoryText.raw": function() {
+		"resultForCategoryText.raw": function () {
 			this.calcResult();
 		}
 	},
@@ -61,15 +61,14 @@ export default {
 			resultForCategoryText: { raw: "" },
 
 			valuesForCategoryText: [
-				1,
 				{
 					kind: "input",
 					inputType: "number",
 					inputLabel: this.$store.getters.i18n("numeration custom"),
-					raw: ""
+					raw: "1"
 				}
 			]
-		}
+		};
 	},
 	methods: {
 		calcResult() {
@@ -78,12 +77,10 @@ export default {
 			this.result.addingShotPrefix = this.isAddingShotPrefix;
 		},
 		numerationEnabling(newNumerationEnabled) {
-			this.isNumerationEnabled = newNumerationEnabled;
+			this.isNumerationEnabled = !!newNumerationEnabled;
 
-			if (this.isNumerationEnabled)
-				FadeOut(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
-			else
-				FadeIn(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
+			if (this.isNumerationEnabled) FadeOut(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
+			else FadeIn(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
 
 			this.calcResult();
 		},
@@ -96,9 +93,7 @@ export default {
 	mounted() {
 		this.calcResult();
 	}
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

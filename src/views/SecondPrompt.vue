@@ -119,22 +119,33 @@ export default {
 				const authorMinimal = authorOnlyUnicodeLetters.replace(/[^\w\s.,]/g, "").replace(/\s+/g, " ").trim();
 
 				return [
-					author,
 					authorDisplayName,
+					author,
 					authorNoHashtags,
 					authorOnlyUnicodeLetters,
 					authorMinimal
-				].filter((value, index, array) => !!value && index === array.indexOf(value));
+				]
+				.filter((value, index, array) => !!value && index === array.indexOf(value))
+				.filter(Boolean);
 			}
 		},
 		filteredCaptions: {
 			/** @returns {string[]} */
 			get() {
+				/** @type {string[]} */
+				const parsedHashtags = [];
+
 				const caption = this.socialPost.caption || "";
 				const captionParsedHashtags = caption.replace(/#(?<entity>[\d\p{L}]+)/gu, (_match, entityGroup) => {
 					if (!entityGroup || typeof entityGroup !== "string") return "";
 
-					return entityGroup.replace(/(\p{Uppercase})(\p{Lowercase})/gu, " $1$2");
+					const parsedHashtag = entityGroup
+						.replace(/(\p{Uppercase})(\p{Lowercase})/gu, " $1$2")
+						.replace(/\s+/g, " ")
+						.trim();
+
+					parsedHashtags.push(parsedHashtag);
+					return ` ${parsedHashtag}`;
 				}).replace(/\s+/g, " ").trim();
 				const captionNoHashtags = caption.replace(/#(?<entity>[\d\p{L}]+)/gu, "").replace(/\s+/g, " ").trim();
 				const captionNoEntities = captionNoHashtags.replace(/@(?<entity>[\d\p{L}]+)/gu, "").replace(/\s+/g, " ").trim();
@@ -145,12 +156,15 @@ export default {
 				return [
 					caption,
 					captionParsedHashtags,
+					...parsedHashtags,
 					captionNoHashtags,
 					captionNoEntities,
 					captionOnlyUnicodeLetters,
 					captionFirstSentence,
 					captionMinimal
-				].filter((value, index, array) => !!value && index === array.indexOf(value));
+				]
+				.filter((value, index, array) => !!value && index === array.indexOf(value))
+				.filter(Boolean);
 			}
 		},
 		youtube: {
