@@ -191,28 +191,27 @@ export default {
 				/** @type {import("../util/gamephotography").GamePhotographyList} */
 				const gamephotographyList = this.$store.getters.gamephotographyList;
 
-				const matchingShots = gamephotographyList.filter((shot) => shot.startsWith(this.baseFilename));
+				const matchingShots = gamephotographyList
+					.filter((shot) => shot.startsWith(this.baseFilename.replace(/ - Shot$/, "")));
 
-				const maxIndex = parseInt(matchingShots
-					.map((shot) => shot.replace(this.baseFilename, "").replace(/^ - Shot /, ""))
-					.map((shotPart) => parseInt(shotPart))
-					.filter(Boolean)
-					.sort((a, b) => a - b)
-					.pop());
-
-				return (maxIndex || matchingShots.length || 0) + 1;
+				if (!matchingShots.length) return 0;
+				return matchingShots.length + 1;
 			}
 		}
 	},
-	
+
 	watch: {
 		"results.author.raw": function() {
-			if (this.suggestedNumerationStart > 1) this.results.numeration.enabled = true;
-			this.results.numeration.startingWith = this.suggestedNumerationStart || 1;
+			if (this.suggestedNumerationStart > 0) {
+				this.results.numeration.enabled = true;
+				this.results.numeration.startingWith = this.suggestedNumerationStart;
+			}
 		},
 		"results.caption.raw": function() {
-			if (this.suggestedNumerationStart > 1) this.results.numeration.enabled = true;
-			this.results.numeration.startingWith = this.suggestedNumerationStart || 1;
+			if (this.suggestedNumerationStart > 0) {
+				this.results.numeration.enabled = true;
+				this.results.numeration.startingWith = this.suggestedNumerationStart;
+			}
 		},
 	},
 	methods: {
@@ -243,6 +242,8 @@ export default {
 						? "gif"
 						: "jpg")
 				);
+
+				this.$store.commit("expandGamephotographyList", `${filename}.${extension}`);
 
 				if (this.isYoutube)
 					return window.open(source, "_blank");
