@@ -7,25 +7,25 @@
 				:checked="isNumerationEnabled"
 				:text="$store.getters.i18n('numeration enabled')"
 				@chosen="numerationEnabling"
-			></input-checkbox>
+			/>
 		</div>
 
 		<div class="category__sub-category">
-			<category-text :result="resultForCategoryText" :predefinedValues="valuesForCategoryText"></category-text>
+			<category-text :result="resultForCategoryText" :predefinedValues="predefinedValuesForCategoryText" />
 
 			<div class="category__value">
 				<input-checkbox
 					:checked="isAddingShotPrefix"
 					:text="$store.getters.i18n('add shot to filename')"
 					@chosen="addingShowPrefixEnabling"
-				></input-checkbox>
+				/>
 			</div>
 
 			<div
 				class="category__sub-category__obfuscator default-pointer default-no-select"
 				@click="numerationEnabling(true)"
 				ref="obfuscator"
-			></div>
+			/>
 		</div>
 	</div>
 </template>
@@ -46,8 +46,14 @@ export default {
 		result: Object
 	},
 	watch: {
-		"resultForCategoryText.raw": function () {
+		"resultForCategoryText.raw": function() {
 			this.calcResult();
+		},
+		"result.enabled": function() {
+			this.numerationEnabling(this.result.enabled, true);
+		},
+		"result.startingWith": function() {
+			this.updateStartingWith();
 		}
 	},
 	data() {
@@ -58,31 +64,37 @@ export default {
 			indexOfChecked: 0,
 			isAddingShotPrefix: this.result.addingShotPrefix,
 
-			resultForCategoryText: { raw: "" },
+			resultForCategoryText: { raw: `${this.result.startingWith || 1}` },
 
-			valuesForCategoryText: [
+			predefinedValuesForCategoryText: [
 				{
 					kind: "input",
 					inputType: "number",
 					inputLabel: this.$store.getters.i18n("numeration custom"),
-					raw: "1"
+					raw: `${this.result.startingWith || 1}`
 				}
 			]
 		};
 	},
 	methods: {
+		updateStartingWith() {
+			if (!this.result.startingWith) return;
+
+			this.resultForCategoryText.raw = `${this.result.startingWith || 1}`;
+			this.predefinedValuesForCategoryText[0].raw = `${this.result.startingWith || 1}`;
+		},
 		calcResult() {
 			this.result.enabled = this.isNumerationEnabled;
 			this.result.startingWith = parseInt(this.resultForCategoryText.raw);
 			this.result.addingShotPrefix = this.isAddingShotPrefix;
 		},
-		numerationEnabling(newNumerationEnabled) {
+		numerationEnabling(newNumerationEnabled, silent = false) {
 			this.isNumerationEnabled = !!newNumerationEnabled;
 
-			if (this.isNumerationEnabled) FadeOut(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
+			if (newNumerationEnabled) FadeOut(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
 			else FadeIn(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
 
-			this.calcResult();
+			if (!silent) this.calcResult();
 		},
 		addingShowPrefixEnabling(newAddingShotPrefix) {
 			this.isAddingShotPrefix = newAddingShotPrefix;

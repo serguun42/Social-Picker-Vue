@@ -12,7 +12,7 @@ self.addEventListener("beforeinstallprompt", () => {});
  * Fetch network and put into cache
  *
  * @param {Request} request
- * @return {Promise<Response>}
+ * @returns {Promise<Response>}
  */
 const fromNetwork = (request) =>
 	fetch(request).then((response) => {
@@ -29,7 +29,7 @@ const fromNetwork = (request) =>
  * Get from cache
  *
  * @param {Request} request
- * @return {Promise<Response>}
+ * @returns {Promise<Response>}
  */
 const fromCache = (request) =>
 	caches

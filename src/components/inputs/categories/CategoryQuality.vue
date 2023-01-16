@@ -71,7 +71,7 @@ export default {
 		qualityEnabling(newQualityEnabled) {
 			this.isQualityEnabled = !!newQualityEnabled;
 
-			if (this.isQualityEnabled) FadeOut(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
+			if (newQualityEnabled) FadeOut(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
 			else FadeIn(this.$refs["obfuscator"], ANIMATIONS.CATEGORY_OBFUSCATOR_FADING_MS);
 
 			this.calcResult();

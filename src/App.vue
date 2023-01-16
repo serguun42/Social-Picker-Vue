@@ -108,7 +108,9 @@ export default {
 		.then((check) => {
 			this.$store.commit("accountPermission", !!check.success);
 
-			if (!check.success) return Promise.reject(check);
+			if (!check.success) return Promise.reject(new Error(JSON.stringify(check)));
+
+			this.$store.dispatch("fetchGamephotographyList");
 		})
 		.catch(/** @param {import("./types").DefaultError} e */ (e) => {
 			LogMessageOrError(e);

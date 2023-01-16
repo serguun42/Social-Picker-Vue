@@ -12,7 +12,7 @@
 
 
 			<category
-				v-if="youtube"
+				v-if="isYoutube"
 				:type="'youtube'"
 				:predefinedValues="socialPost.medias"
 				:name="$store.getters.i18n('video quality')"
@@ -35,13 +35,12 @@
 			></category>
 
 			<category
-				v-if="!youtube"
+				v-if="!isYoutube"
 				:type="'numeration'"
 				:name="$store.getters.i18n('additional numeration')"
-				:result="results.numeraition"
+				:result="results.numeration"
 			></category>
 			<category
-				v-if="!youtube"
 				:type="'quality'"
 				:name="$store.getters.i18n('additional quality label')"
 				:result="results.quality"
@@ -97,7 +96,7 @@ export default {
 			results: {
 				author: { raw: "" },
 				caption: { raw: "" },
-				numeraition: { enabled: false, startingWith: 1, addingShotPrefix: true },
+				numeration: { enabled: false, startingWith: 1, addingShotPrefix: true },
 				quality: { enabled: is4K, label: is4K ? "4K" : "" },
 				/** @type {import("../types").Media} */
 				youtube: { externalUrl: "", filetype: "" }
@@ -167,40 +166,77 @@ export default {
 				.filter(Boolean);
 			}
 		},
-		youtube: {
+		isYoutube: {
 			/** @returns {boolean} */
 			get() { return CheckForLink(this.socialPost.postURL) === "Youtube"; }
+		},
+		baseFilename: {
+			/** @returns {string} */
+			get() {
+				const platformName = CheckForLink(this.socialPost.postURL);
+
+				const baseFilename = `${platformName} - ${
+					this.results.author.raw?.trim()
+				} - ${this.results.caption.raw?.trim()}${
+					this.results.numeration.enabled && this.results.numeration.addingShotPrefix
+						? " - Shot"
+						: ""
+				}`;
+
+				return baseFilename;
+			}
+		},
+		suggestedNumerationStart: {
+			get() {
+				/** @type {import("../util/gamephotography").GamePhotographyList} */
+				const gamephotographyList = this.$store.getters.gamephotographyList;
+
+				const matchingShots = gamephotographyList.filter((shot) => shot.startsWith(this.baseFilename));
+
+				const maxIndex = parseInt(matchingShots
+					.map((shot) => shot.replace(this.baseFilename, "").replace(/^ - Shot /, ""))
+					.map((shotPart) => parseInt(shotPart))
+					.filter(Boolean)
+					.sort((a, b) => a - b)
+					.pop());
+
+				return (maxIndex || matchingShots.length || 0) + 1;
+			}
 		}
+	},
+	
+	watch: {
+		"results.author.raw": function() {
+			if (this.suggestedNumerationStart > 1) this.results.numeration.enabled = true;
+			this.results.numeration.startingWith = this.suggestedNumerationStart || 1;
+		},
+		"results.caption.raw": function() {
+			if (this.suggestedNumerationStart > 1) this.results.numeration.enabled = true;
+			this.results.numeration.startingWith = this.suggestedNumerationStart || 1;
+		},
 	},
 	methods: {
 		save() {
 			const platformName = CheckForLink(this.socialPost.postURL);
 
-			(this.youtube ? [this.results.youtube] : this.socialPost.medias).forEach((media, index) => {
-				let filename = `${platformName} - ${this.results.author.raw?.trim()} - ${this.results.caption.raw?.trim()}`;
+			(this.isYoutube ? [this.results.youtube] : this.socialPost.medias).forEach((media, index) => {
+				let filename = this.baseFilename;
 
-				if (this.results.numeraition.enabled)
-					filename += (this.results.numeraition.addingShotPrefix ? " - Shot" : "");
-
-				if (this.results.numeraition.enabled || this.socialPost.medias.length > 1)
+				if (this.results.numeration.enabled || this.socialPost.medias.length > 1)
 					filename += " " + (
-						index + (this.results.numeraition.enabled ? parseInt(this.results.numeraition.startingWith) || 1 : 1)
+						index + (this.results.numeration.enabled ? parseInt(this.results.numeration.startingWith) || 1 : 1)
 					);
 
 				if (this.results.quality.enabled && this.results.quality.label)
 					filename += ` - ${this.results.quality.label?.trim()}`;
 
-				const source = (media.filehash ?
-									API_METHODS.MediaDownloadURLByFilehash(media.filehash)
-								:
-									(media.original || media.externalUrl)
-								);
+				const source = (media.filehash
+					? API_METHODS.MediaDownloadURLByFilehash(media.filehash)
+					: media.original || media.externalUrl);
 
-				const extension = (
-					media.filetype ||
+				const extension = (media.filetype ||
 					SafeParseURL(media.original || media.externalUrl).pathname
-						.match(/\.([\w\:]+$)/)?.[1]
-						?.replace(/\:\w+$/, "") ||
+					.match(/\.(?<extension>\w+)(?:\:\w+)?$/)?.groups?.extension ||
 					(platformName === "Youtube"
 						? "mp4"
 						: media.type === "gif"
@@ -208,7 +244,7 @@ export default {
 						: "jpg")
 				);
 
-				if (this.youtube)
+				if (this.isYoutube)
 					return window.open(source, "_blank");
 				else
 					SaveFile(source, filename, extension);

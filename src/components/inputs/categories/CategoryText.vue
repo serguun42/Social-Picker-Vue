@@ -46,6 +46,7 @@ export default {
 		},
 		result: Object,
 		predefinedValues: {
+			default: () => [],
 			type: Array,
 			required: false
 		},
@@ -60,20 +61,20 @@ export default {
 			indexOfChecked: 0,
 			/** @type {({ kind: "predefined-line", raw: string } | { kind: "input", raw: string, inputType: string, inputLabel: string })[]} */
 			values: [
-				...(this.predefinedValues || []).map((current) =>
-					((typeof current === "string" || typeof current === "number") ?
-						{ kind: "predefined-line", raw: current.toString() }
-							:
-						current
-					)
+				...this.predefinedValues.map((current) =>
+					typeof current === "string" || typeof current === "number"
+					? { kind: "predefined-line", raw: current.toString() }
+					: current
 				),
-				this.customValueLabel ? {
+				this.customValueLabel
+				? {
 					kind: "input",
 					inputType: "text",
 					inputLabel: this.customValueLabel,
 					raw: ""
-				} : null
-			].filter((value) => !!value)
+				}
+				: null
+			].filter(Boolean)
 		}
 	},
 	methods: {

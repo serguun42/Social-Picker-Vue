@@ -4,6 +4,7 @@ import DefaultLocale from "./config/i18n/en_US.json";
 import { ANIMATIONS } from "./util/animations";
 import { API_METHODS } from "./util/api";
 import Dispatcher from "./util/dispatcher";
+import { CompareLists, ExpandUserList, FetchRemoteList, GetLocalList } from "./util/gamephotography";
 import LogMessageOrError from "./util/log";
 import { GetCompleteTheme } from "./util/theme";
 
@@ -31,7 +32,9 @@ const store = new Vuex.Store({
 		/** @type {import("./types").SocialPost} */
 		socialPost: null,
 
-		socialPostPickedInSession: false
+		socialPostPickedInSession: false,
+
+		gamephotographyList: GetLocalList(),
 	}),
 	mutations: {
 		/**
@@ -93,6 +96,23 @@ const store = new Vuex.Store({
 
 		socialPostPickedInSession(state) {
 			state.socialPostPickedInSession = true;
+		},
+
+		/**
+		 * @param {import("./util/gamephotography").GamePhotographyList} newList
+		 */
+		replaceGamephotographyList(state, newList) {
+			if (!Array.isArray(newList)) return;
+			if (CompareLists(state.gamephotographyList, newList)) return;
+
+			state.gamephotographyList = newList;
+		},
+
+		/**
+		 * @param {string} newShot
+		 */
+		expandGamephotographyList(state, newShot) {
+			state.gamephotographyList = ExpandUserList(newShot);
 		}
 	},
 	actions: {
@@ -137,7 +157,6 @@ const store = new Vuex.Store({
 			themeColorMetaTags.forEach((metaTag) => metaTag.setAttribute("content", settingThemeColor));
 		},
 
-
 		/**
 		 * Pick post with API
 		 * @param {string} postURL
@@ -160,6 +179,12 @@ const store = new Vuex.Store({
 				context.dispatch("showMessage", context.getters.i18n(e?.reason || "error"));
 			})
 			.finally(() => Dispatcher.call("loadingEnded"));
+		},
+
+		fetchGamephotographyList(context) {
+			FetchRemoteList()
+			.then((freshList) => context.commit("replaceGamephotographyList", freshList))
+			.catch(LogMessageOrError);
 		}
 	},
 	getters: {
@@ -172,7 +197,8 @@ const store = new Vuex.Store({
 		permissionToPaste: (state) => state.permissionToPaste,
 		socialPost: (state) => state.socialPost,
 		socialPostOK: (state) => !!state.socialPost?.medias?.length && !!state.socialPost?.postURL,
-		socialPostPickedInSession: (state) => state.socialPostPickedInSession
+		socialPostPickedInSession: (state) => state.socialPostPickedInSession,
+		gamephotographyList: (state) => state.gamephotographyList
 	}
 });
 
