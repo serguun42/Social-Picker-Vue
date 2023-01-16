@@ -97,6 +97,11 @@ export const ExpandUserList = (newShot) => {
 	return originalLocalList.concat(userFilteredList);
 };
 
+export const ClearLocalLists = () => {
+	SaveLocalList(LOCAL_STORAGE_ORIGINAL_LIST_KEY, []);
+	SaveLocalList(LOCAL_STORAGE_USER_LIST_KEY, []);
+};
+
 /**
  * Fetch List from Game Photography site and
  * @returns {Promise<GamePhotographyList>}
@@ -117,6 +122,8 @@ export const FetchRemoteList = () =>
 				const originalLocalList = GetLocalListVariant(LOCAL_STORAGE_ORIGINAL_LIST_KEY);
 
 				if (!CompareLists(cleanFreshList, originalLocalList)) {
+					LogMessageOrError(`<cleanFreshList> differs from <originalLocalList>, overwriting original local list with new data and user list with empty list`, { cleanFreshList, originalLocalList });
+
 					SaveLocalList(LOCAL_STORAGE_ORIGINAL_LIST_KEY, cleanFreshList);
 					SaveLocalList(LOCAL_STORAGE_USER_LIST_KEY, []);
 

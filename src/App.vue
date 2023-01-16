@@ -35,6 +35,7 @@ import { ANIMATIONS, FadeIn, FadeOut } from "./util/animations";
 import { API_METHODS } from "./util/api";
 import Dispatcher from "./util/dispatcher";
 import LogMessageOrError from "./util/log";
+import { ClearLocalLists } from "./util/gamephotography";
 
 export default {
 	name: "App",
@@ -102,6 +103,7 @@ export default {
 		Dispatcher.link("loadingEnded", () => this.loading = false);
 		Dispatcher.link("postPicked", this.postPicked);
 		Dispatcher.link("restart", this.restart);
+		Dispatcher.link("clearCache", () => ClearLocalLists());
 	},
 	mounted() {
 		API_METHODS.AccountCheck()

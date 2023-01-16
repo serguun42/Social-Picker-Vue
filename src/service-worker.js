@@ -48,18 +48,20 @@ self.addEventListener(
 
 		if (request.method !== "GET") return fetch(request);
 
-		let isApiCalled = false;
 		let isBuildHashCalled = false;
+		let isApiCalled = false;
+		let isAnotherDomainCalled = false;
 
 		try {
 			const parsedURL = new URL(request.url || "", process.env.VUE_APP_FULL_PATH);
-			isApiCalled = /^\/api\//i.test(parsedURL.pathname);
 			isBuildHashCalled = /^\/build_hash/i.test(parsedURL.pathname);
+			isApiCalled = /^\/api\//i.test(parsedURL.pathname);
+			isAnotherDomainCalled = parsedURL.hostname !== self.location.hostname;
 		} catch (e) {}
 
 		if (isBuildHashCalled) return fetch(request);
 
-		if (isApiCalled)
+		if (isApiCalled || isAnotherDomainCalled)
 			return event.respondWith(
 				fromNetwork(request)
 					.catch(() => fromCache(request))

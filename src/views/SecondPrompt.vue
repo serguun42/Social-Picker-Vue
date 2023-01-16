@@ -78,6 +78,7 @@ import { API_METHODS } from "@/util/api";
 import Dispatcher from "@/util/dispatcher";
 import SaveFile from "@/util/save-file";
 import Is4K from "@/util/is-4k";
+import LogMessageOrError from "@/util/log";
 
 export default {
 	components: { Card, Category },
@@ -193,6 +194,17 @@ export default {
 
 				const matchingShots = gamephotographyList
 					.filter((shot) => shot.startsWith(this.baseFilename.replace(/ - Shot$/, "")));
+				
+				const maxIndex = matchingShots
+					.map((shot) => shot.replace(this.baseFilename, "").replace(/^ - Shot /, ""))
+					.map((shotPart) => parseInt(shotPart))
+					.filter(Boolean)
+					.sort((a, b) => a - b)
+					.pop();
+
+				LogMessageOrError(matchingShots, maxIndex);
+
+				if (maxIndex > 0) return maxIndex + 1;
 
 				if (!matchingShots.length) return 0;
 				return matchingShots.length + 1;
