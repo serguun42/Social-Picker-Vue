@@ -1,6 +1,6 @@
 {
   "name": "social-picker-vue",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "description": "Frontend client built for Social Picker API – https://github.com/serguun42/Social-Picker-API",
   "main": "src/main.js",
   "scripts": {

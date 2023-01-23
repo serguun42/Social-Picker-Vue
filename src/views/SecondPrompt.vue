@@ -150,7 +150,7 @@ export default {
 				const captionNoHashtags = caption.replace(/#(?<entity>[\d\p{L}]+)/gu, "").replace(/\s+/g, " ").trim();
 				const captionNoEntities = captionNoHashtags.replace(/@(?<entity>[\d\p{L}]+)/gu, "").replace(/\s+/g, " ").trim();
 				const captionOnlyUnicodeLetters = captionNoEntities.replace(/[^\p{L}\p{M}\p{P}\d\-_.,!\s]/gu, "").replace(/\s+/g, " ").trim();
-				const captionFirstSentence = captionOnlyUnicodeLetters.split(/[,.;!?\/\\\(\)…]/)[0].replace(/\s+/g, " ").trim();
+				const captionFirstSentence = captionOnlyUnicodeLetters.split(/[,.;!?/\\\()…\-]/)[0].replace(/\s+/g, " ").trim();
 				const captionMinimal = captionFirstSentence.replace(/[^\w\s.,]/g, "").replace(/\s+/g, " ").trim();
 
 				return [
