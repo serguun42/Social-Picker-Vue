@@ -11,7 +11,7 @@
 				:group="`category-${stamp}`"
 				:checked="indexOfChecked === valueIndex"
 				:text="value.description || `${value.type} ${humanReadableSize(value.filesize)}`"
-				v-on:chosen="youtubeQualityChosen(valueIndex)"
+				v-on:chosen="formatChosen(valueIndex)"
 			></input-radio>
 		</div>
 	</div>
@@ -22,7 +22,7 @@
 import InputRadio from "../InputRadio.vue";
 
 export default {
-	name: "CategoryYoutube",
+	name: "CategoryMultipleFormatsVideo",
 	components: { InputRadio },
 	props: {
 		name: {
@@ -80,7 +80,7 @@ export default {
 			this.result.externalUrl = this.values[this.indexOfChecked].externalUrl;
 			this.result.filetype = this.values[this.indexOfChecked].filetype;
 		},
-		youtubeQualityChosen(newIndexOfChecked) {
+		formatChosen(newIndexOfChecked) {
 			this.indexOfChecked = newIndexOfChecked;
 			this.calcResult();
 		},

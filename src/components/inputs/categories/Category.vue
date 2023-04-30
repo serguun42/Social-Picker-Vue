@@ -14,7 +14,7 @@
 import CategoryText from "./CategoryText.vue"
 import CategoryNumeration from "./CategoryNumeration.vue";
 import CategoryQuality from "./CategoryQuality.vue";
-import CategoryYoutube from "./CategoryYoutube.vue";
+import CategoryMultipleFormatsVideo from "./CategoryMultipleFormatsVideo.vue";
 
 export default {
 	name: "Category",
@@ -39,7 +39,7 @@ export default {
 			dynamicCategory: (this.type === "text" ? CategoryText :
 							  this.type === "numeration" ? CategoryNumeration :
 							  this.type === "quality" ? CategoryQuality :
-							  this.type === "youtube" ? CategoryYoutube :
+							  this.type === "multipleFormatsVideo" ? CategoryMultipleFormatsVideo :
 							  "div")
 		}
 	}

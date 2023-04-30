@@ -12,11 +12,11 @@
 
 
 			<category
-				v-if="isYoutube"
-				:type="'youtube'"
+				v-if="isMultipleFormatsVideo"
+				:type="'multipleFormatsVideo'"
 				:predefinedValues="socialPost.medias"
 				:name="$store.getters.i18n('video quality')"
-				:result="results.youtube"
+				:result="results.multipleFormatsVideo"
 			></category>
 
 			<category
@@ -35,7 +35,7 @@
 			></category>
 
 			<category
-				v-if="!isYoutube"
+				v-if="!isMultipleFormatsVideo"
 				:type="'numeration'"
 				:name="$store.getters.i18n('additional numeration')"
 				:result="results.numeration"
@@ -78,7 +78,6 @@ import { API_METHODS } from "@/util/api";
 import Dispatcher from "@/util/dispatcher";
 import SaveFile from "@/util/save-file";
 import Is4K from "@/util/is-4k";
-import LogMessageOrError from "@/util/log";
 
 export default {
 	components: { Card, Category },
@@ -100,7 +99,7 @@ export default {
 				numeration: { enabled: false, startingWith: 1, addingShotPrefix: true },
 				quality: { enabled: is4K, label: is4K ? "4K" : "" },
 				/** @type {import("../types").Media} */
-				youtube: { externalUrl: "", filetype: "" }
+				multipleFormatsVideo: { externalUrl: "", filetype: "" }
 			}
 		}
 	},
@@ -167,9 +166,12 @@ export default {
 				.filter(Boolean);
 			}
 		},
-		isYoutube: {
+		isMultipleFormatsVideo: {
 			/** @returns {boolean} */
-			get() { return CheckForLink(this.socialPost.postURL) === "Youtube"; }
+			get() {
+				return CheckForLink(this.socialPost.postURL) === "Youtube"
+				|| CheckForLink(this.socialPost.postURL) === "Tiktok";
+			}
 		},
 		baseFilename: {
 			/** @returns {string} */
@@ -202,8 +204,6 @@ export default {
 					.sort((a, b) => a - b)
 					.pop();
 
-				LogMessageOrError(matchingShots, maxIndex);
-
 				if (maxIndex > 0) return maxIndex + 1;
 
 				if (!matchingShots.length) return 0;
@@ -230,7 +230,11 @@ export default {
 		save() {
 			const platformName = CheckForLink(this.socialPost.postURL);
 
-			(this.isYoutube ? [this.results.youtube] : this.socialPost.medias).forEach((media, index) => {
+			(
+				this.isMultipleFormatsVideo
+				? [this.results.multipleFormatsVideo]
+				: this.socialPost.medias
+			).forEach((media, index) => {
 				let filename = this.baseFilename;
 
 				if (this.results.numeration.enabled || this.socialPost.medias.length > 1)
@@ -248,16 +252,18 @@ export default {
 				const extension = (media.filetype ||
 					SafeParseURL(media.original || media.externalUrl).pathname
 					.match(/\.(?<extension>\w+)(?:\:\w+)?$/)?.groups?.extension ||
-					(platformName === "Youtube"
+					(
+						this.isMultipleFormatsVideo
 						? "mp4"
 						: media.type === "gif"
 						? "gif"
-						: "jpg")
+						: "jpg"
+					)
 				);
 
 				this.$store.commit("expandGamephotographyList", `${filename}.${extension}`);
 
-				if (this.isYoutube)
+				if (this.isMultipleFormatsVideo)
 					return window.open(source, "_blank");
 				else
 					SaveFile(source, filename, extension);

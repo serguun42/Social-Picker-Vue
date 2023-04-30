@@ -125,6 +125,8 @@ export const CheckForLink = (givenURL) => {
 		return "Joyreactor";
 	else if (url.hostname === "coub.com")
 		return "Coub";
+	else if (/(\w+\.)?tiktok\.com$/.test(url.hostname))
+		return "Tiktok";
 	else
 		return false;
 };

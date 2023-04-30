@@ -232,4 +232,9 @@ export default {
 	background-color: #0097FA;
 	color: #FFF;
 }
+
+.buttons-container__button--tiktok {
+	background-color: #000;
+	color: #FFF;
+}
 </style>
