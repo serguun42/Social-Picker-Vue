@@ -107,7 +107,9 @@ export const CheckForLink = (givenURL) => {
 		return "Anime-Pictures";
 	else if (
 		url.hostname === "kemono.party" ||
-		url.hostname === "www.kemono.party"
+		url.hostname === "kemono.su" ||
+		url.hostname === "www.kemono.party" ||
+		url.hostname === "beta.kemono.party"
 	)
 		return "KemonoParty";
 	else if (
