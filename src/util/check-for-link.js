@@ -111,7 +111,7 @@ export const CheckForLink = (givenURL) => {
 		url.hostname === "www.kemono.party" ||
 		url.hostname === "beta.kemono.party"
 	)
-		return "KemonoParty";
+		return "Kemono";
 	else if (
 		url.hostname === "youtube.com" ||
 		url.hostname === "www.youtube.com" ||
